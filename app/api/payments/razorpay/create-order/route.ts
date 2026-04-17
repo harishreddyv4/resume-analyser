@@ -24,7 +24,7 @@ export async function POST(request: Request) {
   }
   if (!isRazorpayConfigured()) {
     return jsonApiError(
-      "Payments are not configured (missing Razorpay keys).",
+      "Razorpay is not configured on this server: set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in your host environment (Hostinger → Node app → Environment variables), save, then restart the app. Open GET /api/payments/razorpay/config-status on your site to verify the running process sees them.",
       503,
     );
   }
