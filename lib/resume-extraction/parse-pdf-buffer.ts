@@ -1,14 +1,9 @@
-import { PDFParse } from "pdf-parse";
+import pdfParse from "pdf-parse";
 
 /**
- * Plain text from a PDF buffer using `pdf-parse` (pdf.js–based, Node-friendly in v2).
+ * Plain text from a PDF buffer using `pdf-parse` v1.x (Node-friendly; no pdfjs DOM/canvas).
  */
 export async function parsePdfBuffer(buffer: Buffer): Promise<string> {
-  const parser = new PDFParse({ data: new Uint8Array(buffer) });
-  try {
-    const result = await parser.getText();
-    return result.text?.trim() ?? "";
-  } finally {
-    await parser.destroy().catch(() => undefined);
-  }
+  const data = await pdfParse(buffer);
+  return (data.text ?? "").trim();
 }
