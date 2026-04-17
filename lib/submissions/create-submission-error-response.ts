@@ -61,6 +61,25 @@ function mapUnknownSubmissionError(err: unknown): { message: string; status: num
     };
   }
 
+  if (
+    m.includes("fetch failed") ||
+    m.includes("econnrefused") ||
+    m.includes("enotfound") ||
+    m.includes("getaddrinfo") ||
+    m.includes("certificate") ||
+    m.includes("ssl") ||
+    m.includes("timed out") ||
+    m.includes("timeout") ||
+    m.includes("socket hang up") ||
+    m.includes("econnreset")
+  ) {
+    return {
+      message:
+        "The server could not reach Supabase or storage (network/TLS/timeout). Check SUPABASE URL and keys on the host, firewall/outbound rules, and that the Supabase project is up.",
+      status: 503,
+    };
+  }
+
   return { message: "Could not create submission.", status: 500 };
 }
 

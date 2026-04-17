@@ -58,7 +58,11 @@ export async function submitUploadForm(
         message = parsed.error.trim();
       }
     } catch {
-      // keep generic message
+      const raw = result.bodyText?.trim() ?? "";
+      if (raw.startsWith("<")) {
+        message =
+          `Server error (HTTP ${result.status}). The host returned HTML instead of JSON — often a timeout, process crash, or body-size limit. Check your hosting logs for POST /api/submissions and raise upload/time limits if needed.`;
+      }
     }
     return { ok: false, message };
   }
