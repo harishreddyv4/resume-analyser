@@ -14,19 +14,25 @@ export function AdminUnauthorized() {
             Unauthorized
           </h1>
           <p className="mt-3 text-sm text-zinc-600">
-            Admin access is restricted. Set{" "}
+            Admin access is restricted. The server must have{" "}
             <code className="rounded bg-zinc-100 px-1 py-0.5 text-xs">
               ADMIN_DASHBOARD_KEY
             </code>{" "}
-            in{" "}
+            set to the same secret you put in the URL or header. Locally use{" "}
             <code className="rounded bg-zinc-100 px-1 py-0.5 text-xs">
               .env.local
-            </code>
-            , restart{" "}
+            </code>{" "}
+            and restart{" "}
             <code className="rounded bg-zinc-100 px-1 py-0.5 text-xs">
               npm run dev
             </code>
-            , then pass the same value using either:
+            ; on production (e.g. Hostinger) add it under{" "}
+            <strong className="font-semibold">Environment variables</strong> and
+            restart the Node app —{" "}
+            <code className="rounded bg-zinc-100 px-1 py-0.5 text-xs">
+              ?adminKey=
+            </code>{" "}
+            alone is not enough. Then use either:
           </p>
           <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-zinc-600">
             <li>
@@ -54,7 +60,7 @@ export function AdminUnauthorized() {
             <strong className="font-semibold">
               , wrap the whole value in single quotes in{" "}
             </strong>
-            <code className="font-mono">.env.local</code>
+            <code className="font-mono">.env.local</code> / host env
             <strong className="font-semibold">
               {" "}
               (e.g.{" "}
