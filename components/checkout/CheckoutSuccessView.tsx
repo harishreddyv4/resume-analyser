@@ -2,7 +2,9 @@ import Link from "next/link";
 import { ButtonLink } from "@/components/ui/Button";
 import { Container } from "@/components/layout/Container";
 import { site } from "@/lib/site";
-import { CheckCircle2, Mail, Sparkles, Timer } from "lucide-react";
+import type { AnalysisStatus, PaymentLifecycleStatus } from "@/types/submission";
+import type { LucideIcon } from "lucide-react";
+import { CheckCircle2, Mail, Sparkles, Timer, AlertCircle } from "lucide-react";
 
 export type CheckoutSuccessFootnote =
   | "verified"
@@ -20,6 +22,9 @@ export type CheckoutSuccessViewProps = {
   targetRole: string | null;
   referenceId: string;
   footnote: CheckoutSuccessFootnote;
+  /** When set (verified submission), status chips reflect the database, not static copy. */
+  livePaymentStatus?: PaymentLifecycleStatus;
+  livePipelineStatus?: AnalysisStatus;
 };
 
 function StatusTag({
@@ -27,9 +32,9 @@ function StatusTag({
   label,
   tone,
 }: {
-  icon: typeof CheckCircle2;
+  icon: LucideIcon;
   label: string;
-  tone: "emerald" | "amber" | "sky";
+  tone: "emerald" | "amber" | "sky" | "rose";
 }) {
   const tones = {
     emerald:
@@ -37,6 +42,7 @@ function StatusTag({
     amber:
       "border-amber-200/90 bg-amber-50/95 text-amber-950 ring-amber-100/80",
     sky: "border-sky-200/90 bg-sky-50/95 text-sky-950 ring-sky-100/80",
+    rose: "border-rose-200/90 bg-rose-50/95 text-rose-950 ring-rose-100/80",
   } as const;
 
   return (
@@ -49,6 +55,58 @@ function StatusTag({
   );
 }
 
+function statusChips(
+  livePayment: PaymentLifecycleStatus | undefined,
+  livePipeline: AnalysisStatus | undefined,
+) {
+  const hasLive = livePayment !== undefined && livePipeline !== undefined;
+  if (!hasLive) {
+    return {
+      pay: { icon: CheckCircle2, label: "Payment received", tone: "emerald" as const },
+      analysis: { icon: Timer, label: "Analysis queued", tone: "amber" as const },
+      report: { icon: Mail, label: "Report will be emailed", tone: "sky" as const },
+    };
+  }
+  const paid = livePayment === "paid";
+  const pay = paid
+    ? { icon: CheckCircle2, label: "Payment received", tone: "emerald" as const }
+    : { icon: AlertCircle, label: "Payment not confirmed yet", tone: "amber" as const };
+
+  let analysis: { icon: LucideIcon; label: string; tone: "emerald" | "amber" | "sky" | "rose" };
+  if (!paid) {
+    analysis = {
+      icon: Timer,
+      label: "Report after payment",
+      tone: "amber",
+    };
+  } else if (livePipeline === "complete") {
+    analysis = { icon: CheckCircle2, label: "Report ready", tone: "emerald" };
+  } else if (livePipeline === "failed") {
+    analysis = {
+      icon: AlertCircle,
+      label: "Report generation hit an error",
+      tone: "rose",
+    };
+  } else if (livePipeline === "processing") {
+    analysis = { icon: Timer, label: "Analyzing your resume", tone: "amber" };
+  } else {
+    analysis = { icon: Timer, label: "In the analysis queue", tone: "amber" };
+  }
+
+  let report: { icon: LucideIcon; label: string; tone: "emerald" | "amber" | "sky" | "rose" };
+  if (!paid) {
+    report = { icon: Mail, label: "We email you when the report is ready", tone: "sky" };
+  } else if (livePipeline === "complete") {
+    report = { icon: Mail, label: "You should have an email with the report", tone: "sky" };
+  } else if (livePipeline === "failed") {
+    report = { icon: Mail, label: "We will help over email if the report is stuck", tone: "amber" };
+  } else {
+    report = { icon: Mail, label: "We will email you when the report is ready", tone: "sky" };
+  }
+
+  return { pay, analysis, report };
+}
+
 export function CheckoutSuccessView({
   firstName,
   fullName,
@@ -58,9 +116,19 @@ export function CheckoutSuccessView({
   targetRole,
   referenceId,
   footnote,
+  livePaymentStatus,
+  livePipelineStatus,
 }: CheckoutSuccessViewProps) {
   const thankYouName =
     firstName && firstName !== "—" ? firstName : "there";
+  const chips = statusChips(
+    livePaymentStatus,
+    livePipelineStatus,
+  );
+  const showFailureCallout =
+    footnote === "verified" &&
+    livePaymentStatus === "paid" &&
+    livePipelineStatus === "failed";
 
   return (
     <main className="relative min-h-[85vh] overflow-hidden border-b border-zinc-200/60 bg-gradient-to-b from-stone-50 via-white to-zinc-50">
@@ -86,16 +154,34 @@ export function CheckoutSuccessView({
               Your resume has been received and is safely on file.
             </p>
             <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-zinc-600 sm:text-lg">
-              Your payment is confirmed, and your file is in the analysis queue.
-              We have what we need to produce your report—sit tight while we
-              prepare tailored feedback for your next step.
+              {showFailureCallout ? (
+                <>
+                  Your payment is confirmed. The automated report step did not complete
+                  successfully—if you are seeing this message, contact support and include
+                  the reference id below. We can retry or help manually.
+                </>
+              ) : (
+                <>
+                  Your payment is confirmed, and your file is in the analysis queue.
+                  We have what we need to produce your report—sit tight while we
+                  prepare tailored feedback for your next step.
+                </>
+              )}
             </p>
           </div>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-            <StatusTag icon={CheckCircle2} label="Payment received" tone="emerald" />
-            <StatusTag icon={Timer} label="Analysis queued" tone="amber" />
-            <StatusTag icon={Mail} label="Report will be emailed" tone="sky" />
+            <StatusTag icon={chips.pay.icon} label={chips.pay.label} tone={chips.pay.tone} />
+            <StatusTag
+              icon={chips.analysis.icon}
+              label={chips.analysis.label}
+              tone={chips.analysis.tone}
+            />
+            <StatusTag
+              icon={chips.report.icon}
+              label={chips.report.label}
+              tone={chips.report.tone}
+            />
           </div>
 
           <div className="mx-auto mt-12 max-w-xl rounded-3xl border border-zinc-200/80 bg-white/90 p-8 shadow-[0_24px_80px_-28px_rgba(0,0,0,0.14)] ring-1 ring-zinc-900/[0.04] backdrop-blur-sm sm:p-10">

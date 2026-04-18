@@ -9,6 +9,7 @@ import {
 import { resolvePlan } from "@/lib/site";
 import { fetchSubmissionById } from "@/lib/supabase/submissions";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+import type { AnalysisStatus, PaymentLifecycleStatus } from "@/types/submission";
 
 export const dynamic = "force-dynamic";
 
@@ -49,6 +50,8 @@ export default async function CheckoutSuccessPage({
   let targetRole: string | null = roleFromUrl;
   let referenceId = submissionId ?? "—";
   let footnote: "verified" | "offline" | "lookup_miss" = "offline";
+  let livePaymentStatus: PaymentLifecycleStatus | undefined;
+  let livePipelineStatus: AnalysisStatus | undefined;
 
   if (submissionId && isUuid(submissionId) && isSupabaseConfigured()) {
     try {
@@ -61,6 +64,8 @@ export default async function CheckoutSuccessPage({
         targetRole = sub.targetRole?.trim() || roleFromUrl;
         referenceId = sub.id;
         footnote = "verified";
+        livePaymentStatus = sub.paymentStatus;
+        livePipelineStatus = sub.status;
       } else {
         footnote = "lookup_miss";
       }
@@ -81,6 +86,8 @@ export default async function CheckoutSuccessPage({
       targetRole={targetRole}
       referenceId={referenceId}
       footnote={footnote}
+      livePaymentStatus={livePaymentStatus}
+      livePipelineStatus={livePipelineStatus}
     />
   );
 }

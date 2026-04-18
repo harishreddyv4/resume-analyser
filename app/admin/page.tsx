@@ -140,6 +140,7 @@ export default async function AdminPage({
                 <th className="px-4 py-3">Plan</th>
                 <th className="px-4 py-3">Payment</th>
                 <th className="px-4 py-3">Analysis</th>
+                <th className="px-4 py-3 min-w-[8rem]">Razorpay</th>
                 <th className="px-4 py-3">Created</th>
                 <th className="px-4 py-3">Open</th>
               </tr>
@@ -147,7 +148,7 @@ export default async function AdminPage({
             <tbody>
               {submissions.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-zinc-500">
+                  <td colSpan={8} className="px-4 py-8 text-center text-zinc-500">
                     No submissions found for these filters.
                   </td>
                 </tr>
@@ -159,6 +160,37 @@ export default async function AdminPage({
                     <td className="px-4 py-3">{row.selected_plan}</td>
                     <td className="px-4 py-3">{row.payment_status}</td>
                     <td className="px-4 py-3">{row.analysis_status}</td>
+                    <td className="px-4 py-3 font-mono text-[11px] leading-snug text-zinc-600">
+                      {row.payment ? (
+                        <div className="max-w-[12rem]">
+                          {row.payment.provider_order_id ? (
+                            <div>
+                              <span className="text-zinc-400">order </span>
+                              <span className="break-all" title="Razorpay order_id">
+                                {row.payment.provider_order_id}
+                              </span>
+                            </div>
+                          ) : null}
+                          {row.payment.provider_payment_id ? (
+                            <div className="mt-0.5">
+                              <span className="text-zinc-400">pay </span>
+                              <span
+                                className="break-all text-zinc-500"
+                                title="Razorpay payment_id"
+                              >
+                                {row.payment.provider_payment_id}
+                              </span>
+                            </div>
+                          ) : null}
+                          {!row.payment.provider_order_id &&
+                          !row.payment.provider_payment_id ? (
+                            <span className="text-zinc-400">—</span>
+                          ) : null}
+                        </div>
+                      ) : (
+                        <span className="text-zinc-400">—</span>
+                      )}
+                    </td>
                     <td className="px-4 py-3">{formatDate(row.created_at)}</td>
                     <td className="px-4 py-3">
                       <ButtonLink

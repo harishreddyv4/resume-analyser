@@ -98,7 +98,44 @@ export default async function AdminSubmissionDetailPage({
               <dt className="text-xs uppercase tracking-wide text-zinc-500">Submission ID</dt>
               <dd className="mt-1 font-mono text-xs text-zinc-700">{submission.id}</dd>
             </div>
+            {submission.payment ? (
+              <>
+                <div className="sm:col-span-2">
+                  <dt className="text-xs uppercase tracking-wide text-zinc-500">
+                    Razorpay order
+                  </dt>
+                  <dd className="mt-1 break-all font-mono text-xs text-zinc-700">
+                    {submission.payment.provider_order_id || "—"}
+                  </dd>
+                </div>
+                <div className="sm:col-span-2">
+                  <dt className="text-xs uppercase tracking-wide text-zinc-500">
+                    Razorpay payment
+                  </dt>
+                  <dd className="mt-1 break-all font-mono text-xs text-zinc-700">
+                    {submission.payment.provider_payment_id || "—"}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs uppercase tracking-wide text-zinc-500">
+                    Payment record
+                  </dt>
+                  <dd className="mt-1 text-sm text-zinc-700">
+                    {submission.payment.record_status}
+                  </dd>
+                </div>
+              </>
+            ) : null}
           </dl>
+
+          {submission.analysis_status === "failed" && submission.payment_status === "paid" ? (
+            <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950">
+              Analysis failed after payment. Check the server log for{" "}
+              <code className="rounded bg-amber-100/80 px-1 py-0.5">[post-payment-analysis]</code> on
+              the host, and verify OpenAI keys, Supabase storage, and PDF generation. The resume file
+              link above can be retested manually.
+            </p>
+          ) : null}
 
           <div className="mt-6 space-y-3 border-t border-zinc-100 pt-6 text-sm">
             <p className="text-zinc-700">
