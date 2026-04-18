@@ -4,7 +4,10 @@ import { SectionHeading } from "./SectionHeading";
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="scroll-mt-24 py-16 sm:py-20">
+    <section
+      id="how-it-works"
+      className="scroll-mt-24 border-t border-slate-200/60 py-16 sm:py-20"
+    >
       <Container>
         <SectionHeading
           eyebrow="How it works"
@@ -15,17 +18,25 @@ export function HowItWorks() {
           {howItWorks.map((item) => (
             <li
               key={item.step}
-              className="flex flex-col rounded-2xl border border-zinc-200 bg-white p-6 sm:p-7"
+              className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white/90 p-6 shadow-surface transition-all duration-200 hover:shadow-surface-lg sm:p-7"
             >
-              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-400">
-                Step {item.step}
-              </span>
-              <h3 className="mt-3 text-lg font-semibold tracking-tight text-zinc-900">
-                {item.title}
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-zinc-600">
-                {item.body}
-              </p>
+              <span
+                className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-cyan-500/5 transition-transform duration-300 group-hover:scale-110"
+                aria-hidden
+              />
+              <div className="relative flex gap-4">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-slate-900 to-cyan-800 text-xs font-bold tracking-wider text-white shadow-surface">
+                  {item.step}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-lg font-semibold tracking-tight text-slate-900">
+                    {item.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                    {item.body}
+                  </p>
+                </div>
+              </div>
             </li>
           ))}
         </ol>

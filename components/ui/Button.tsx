@@ -1,14 +1,20 @@
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 
-type Variant = "primary" | "secondary" | "ghost";
+type Variant = "primary" | "secondary" | "ghost" | "ghostOnDark";
+
+const base =
+  "inline-flex h-11 items-center justify-center rounded-xl px-5 text-sm font-semibold transition-all duration-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100";
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-zinc-900 text-white hover:bg-zinc-800 border border-transparent",
+    "bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white shadow-surface hover:shadow-surface-lg hover:brightness-[1.03] border border-slate-800/80",
   secondary:
-    "bg-white text-zinc-900 border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50",
-  ghost: "text-zinc-700 hover:text-zinc-900 border border-transparent",
+    "bg-white/95 text-slate-900 border border-slate-200/90 shadow-surface hover:border-slate-300 hover:bg-cyan-50/40 hover:shadow-surface",
+  ghost:
+    "text-slate-600 hover:text-slate-900 border border-transparent hover:border-slate-200/80 hover:bg-white/60",
+  ghostOnDark:
+    "text-white/95 border border-white/25 bg-white/5 hover:bg-white/10 hover:text-white",
 };
 
 type ButtonLinkProps = Omit<ComponentProps<typeof Link>, "className"> & {
@@ -24,10 +30,7 @@ export function ButtonLink({
   ...props
 }: ButtonLinkProps) {
   return (
-    <Link
-      className={`inline-flex h-11 items-center justify-center rounded-lg px-5 text-sm font-semibold transition-colors ${variants[variant]} ${className}`}
-      {...props}
-    >
+    <Link className={`${base} ${variants[variant]} ${className}`} {...props}>
       {children}
     </Link>
   );
@@ -46,7 +49,7 @@ export function Button({
   return (
     <button
       type={type}
-      className={`inline-flex h-11 items-center justify-center rounded-lg px-5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant]} ${className}`}
+      className={`${base} ${variants[variant]} ${className}`}
       {...props}
     />
   );

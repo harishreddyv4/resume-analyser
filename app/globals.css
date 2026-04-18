@@ -5,16 +5,45 @@
 :root {
   color-scheme: light;
   --background: #ffffff;
-  --foreground: #18181b;
+  --foreground: #0f172a;
+  --brand-accent: 8 145 178;
+  --page-fade: linear-gradient(
+    180deg,
+    #f1f5f9 0%,
+    #ffffff 38%,
+    #f8fafc 100%
+  );
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
+  background-image: var(--page-fade);
+  background-attachment: fixed;
+}
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid rgb(8 145 178 / 0.5);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: rgb(207 250 254 / 0.85);
+    color: #0f172a;
+  }
+}
+
+@layer components {
+  .surface-elevated {
+    @apply rounded-2xl border border-slate-200/80 bg-white/90 shadow-surface;
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  .text-gradient-brand {
+    @apply bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-900 bg-clip-text text-transparent;
   }
 }

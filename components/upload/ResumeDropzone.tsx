@@ -44,7 +44,7 @@ export function ResumeDropzone({
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-zinc-800" htmlFor={id}>
+      <label className="block text-sm font-medium text-slate-800" htmlFor={id}>
         Resume
       </label>
       <input
@@ -58,7 +58,9 @@ export function ResumeDropzone({
       />
       <div
         className={`rounded-xl border border-dashed transition-colors ${
-          dragging ? "border-zinc-900 bg-zinc-100" : "border-zinc-300 bg-zinc-50"
+          dragging
+            ? "border-cyan-700 bg-cyan-50/60"
+            : "border-slate-300/90 bg-slate-50/80"
         } ${error ? "ring-1 ring-red-200" : ""} ${disabled ? "opacity-60" : ""}`}
         onDragEnter={(e) => {
           e.preventDefault();
@@ -88,24 +90,26 @@ export function ResumeDropzone({
           onClick={openPicker}
           className="flex w-full flex-col items-center px-6 py-10 text-center sm:py-12"
         >
-          <UploadCloud className="h-9 w-9 text-zinc-400" aria-hidden />
-          <span className="mt-3 text-sm font-semibold text-zinc-900">
+          <UploadCloud className="h-9 w-9 text-cyan-700/40" aria-hidden />
+          <span className="mt-3 text-sm font-semibold text-slate-900">
             {file ? "Replace file" : "Drop file or click to upload"}
           </span>
-          <span className="mt-1 text-xs text-zinc-500">
+          <span className="mt-1 text-xs text-slate-500">
             PDF, DOC, or DOCX · up to 10 MB
           </span>
         </button>
       </div>
 
       {isUploading ? (
-        <div className="space-y-2 rounded-lg border border-zinc-200 bg-white px-4 py-3">
-          <div className="flex items-center justify-between text-xs font-medium text-zinc-600">
+        <div className="space-y-2 rounded-lg border border-slate-200/80 bg-white px-4 py-3 shadow-surface">
+          <div className="flex items-center justify-between text-xs font-medium text-slate-600">
             <span>{progressHint ?? "Uploading"}</span>
-            <span className="tabular-nums text-zinc-900">{Math.round(progress)}%</span>
+            <span className="tabular-nums text-slate-900">
+              {Math.round(progress)}%
+            </span>
           </div>
           <div
-            className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-200"
+            className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200/90"
             role="progressbar"
             aria-valuenow={Math.round(progress)}
             aria-valuemin={0}
@@ -113,7 +117,7 @@ export function ResumeDropzone({
             aria-label={progressHint ?? "Upload progress"}
           >
             <div
-              className="h-full rounded-full bg-zinc-900 transition-[width] duration-150 ease-out"
+              className="h-full rounded-full bg-gradient-to-r from-slate-800 to-cyan-800 transition-[width] duration-150 ease-out"
               style={{ width: `${Math.min(100, progress)}%` }}
             />
           </div>
@@ -121,15 +125,15 @@ export function ResumeDropzone({
       ) : null}
 
       {file && !isUploading ? (
-        <div className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm text-zinc-700">
-          <FileText className="h-4 w-4 shrink-0 text-zinc-400" aria-hidden />
+        <div className="flex items-center gap-2 rounded-lg border border-slate-200/80 bg-white px-3 py-2.5 text-sm text-slate-700 shadow-surface">
+          <FileText className="h-4 w-4 shrink-0 text-cyan-700/50" aria-hidden />
           <span className="min-w-0 flex-1 truncate font-medium">
             {file.name}
           </span>
           <button
             type="button"
             disabled={disabled}
-            className="shrink-0 text-xs font-semibold text-zinc-600 underline-offset-2 hover:text-zinc-900 hover:underline disabled:opacity-50"
+            className="shrink-0 text-xs font-semibold text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline disabled:opacity-50"
             onClick={() => onChangeFile(null)}
           >
             Remove

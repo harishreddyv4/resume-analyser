@@ -14,12 +14,12 @@ export function FormField({ id, label, hint, error, children }: FormFieldProps) 
 
   return (
     <div className="space-y-2">
-      <label htmlFor={id} className="block text-sm font-medium text-zinc-800">
+      <label htmlFor={id} className="block text-sm font-medium text-slate-800">
         {label}
       </label>
       {children({ hintId, errorId })}
       {hint && !error ? (
-        <p id={hintId} className="text-xs leading-relaxed text-zinc-500">
+        <p id={hintId} className="text-xs leading-relaxed text-slate-500">
           {hint}
         </p>
       ) : null}

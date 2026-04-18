@@ -7,7 +7,7 @@ export function Features() {
   return (
     <section
       id="features"
-      className="scroll-mt-24 bg-zinc-50 py-16 sm:py-20"
+      className="scroll-mt-24 border-t border-slate-200/60 bg-slate-50/80 py-16 sm:py-20"
     >
       <Container>
         <SectionHeading
@@ -19,17 +19,19 @@ export function Features() {
           {features.map((feature) => (
             <li
               key={feature.title}
-              className="flex gap-4 rounded-2xl border border-zinc-200 bg-white p-6"
+              className="group flex gap-4 rounded-2xl border border-slate-200/80 bg-white/90 p-6 shadow-surface transition-all duration-200 hover:-translate-y-0.5 hover:shadow-surface-lg"
             >
-              <CheckCircle2
-                className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600"
-                aria-hidden
-              />
+              <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-50 ring-1 ring-cyan-100/80 transition-colors group-hover:bg-cyan-100/60">
+                <CheckCircle2
+                  className="h-5 w-5 text-cyan-700"
+                  aria-hidden
+                />
+              </span>
               <div>
-                <h3 className="text-base font-semibold text-zinc-900">
+                <h3 className="text-base font-semibold text-slate-900">
                   {feature.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-zinc-600">
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">
                   {feature.body}
                 </p>
               </div>

@@ -37,23 +37,23 @@ export function OrderSummaryPanel({ control, resume }: OrderSummaryPanelProps) {
   ];
 
   return (
-    <aside className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-6 shadow-sm">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+    <aside className="rounded-2xl border border-slate-200/80 bg-gradient-to-b from-slate-50/90 to-cyan-50/20 p-6 shadow-surface">
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
         Summary
       </p>
-      <h2 className="mt-2 text-lg font-semibold tracking-tight text-zinc-900">
+      <h2 className="mt-2 text-lg font-semibold tracking-tight text-slate-900">
         Order preview
       </h2>
-      <dl className="mt-6 space-y-4 border-t border-zinc-200 pt-6">
+      <dl className="mt-6 space-y-4 border-t border-slate-200/80 pt-6">
         {rows.map((row) => (
           <div
             key={row.k}
             className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-4"
           >
-            <dt className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+            <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
               {row.k}
             </dt>
-            <dd className="text-sm font-medium text-zinc-900 sm:max-w-[60%] sm:truncate sm:text-right">
+            <dd className="text-sm font-medium text-slate-900 sm:max-w-[60%] sm:truncate sm:text-right">
               {row.v}
             </dd>
           </div>

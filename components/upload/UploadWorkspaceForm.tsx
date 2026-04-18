@@ -110,7 +110,7 @@ export function UploadWorkspaceForm() {
     <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
       <form
         onSubmit={onSubmit}
-        className="space-y-8 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8"
+        className="space-y-8 rounded-2xl border border-slate-200/80 bg-white/95 p-6 shadow-surface sm:p-8"
         noValidate
       >
         <fieldset disabled={busy} className="space-y-8 border-0 p-0">
@@ -194,7 +194,7 @@ export function UploadWorkspaceForm() {
 
           <PlanPicker register={register} errors={errors} disabled={busy} />
 
-          <div className="space-y-4 border-t border-zinc-100 pt-8">
+          <div className="space-y-4 border-t border-slate-100 pt-8">
             {submitError ? (
               <p
                 role="alert"
@@ -203,7 +203,7 @@ export function UploadWorkspaceForm() {
                 {submitError}
               </p>
             ) : null}
-            <p className="text-xs font-medium leading-relaxed text-zinc-500">
+            <p className="text-xs font-medium leading-relaxed text-slate-500">
               {uploadTrustStatement}
             </p>
             <Button
@@ -219,7 +219,7 @@ export function UploadWorkspaceForm() {
 
       <div className="lg:sticky lg:top-28">
         <OrderSummaryPanel control={form.control} resume={resume} />
-        <p className="mt-4 hidden text-center text-xs text-zinc-400 lg:block">
+        <p className="mt-4 hidden text-center text-xs text-slate-400 lg:block">
           Totals confirm at checkout.
         </p>
       </div>

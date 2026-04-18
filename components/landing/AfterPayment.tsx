@@ -7,7 +7,7 @@ export function AfterPayment() {
   return (
     <section
       id="after-payment"
-      className="scroll-mt-24 border-y border-zinc-200 bg-white py-16 sm:py-20"
+      className="scroll-mt-24 border-y border-slate-200/60 bg-white/90 py-16 sm:py-20"
     >
       <Container>
         <SectionHeading
@@ -19,24 +19,26 @@ export function AfterPayment() {
           {afterPaymentItems.map((item) => (
             <li
               key={item.title}
-              className="flex gap-3 rounded-xl border border-zinc-200 bg-zinc-50/80 p-5"
+              className="flex gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/80 p-5 shadow-surface transition-shadow duration-200 hover:shadow-surface-lg"
             >
-              <FileCheck2
-                className="mt-0.5 h-5 w-5 shrink-0 text-zinc-700"
-                aria-hidden
-              />
+              <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-cyan-50 ring-1 ring-cyan-100/80">
+                <FileCheck2
+                  className="h-5 w-5 text-cyan-800"
+                  aria-hidden
+                />
+              </span>
               <div>
-                <h3 className="text-sm font-semibold text-zinc-900">
+                <h3 className="text-sm font-semibold text-slate-900">
                   {item.title}
                 </h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-zinc-600">
+                <p className="mt-1.5 text-sm leading-relaxed text-slate-600">
                   {item.body}
                 </p>
               </div>
             </li>
           ))}
         </ul>
-        <p className="mt-8 text-center text-xs font-medium text-zinc-500">
+        <p className="mt-8 text-center text-xs font-medium text-slate-500">
           Exact layout may vary by tier; Job Match unlocks JD-specific sections.
         </p>
       </Container>
