@@ -135,11 +135,15 @@ export default async function AdminSubmissionDetailPage({
               <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950">
                 After payment, the server runs analysis (OpenAI), saves the report and PDF to
                 Supabase, then emails the user. If analysis is not{" "}
-                <code className="rounded bg-amber-100/80 px-1 py-0.5">complete</code>, open{" "}
+                <code className="rounded bg-amber-100/80 px-1 py-0.5">complete</code>,                 open{" "}
+                <code className="rounded bg-amber-100/80 px-1 py-0.5">
+                  /api/payments/razorpay/config-status
+                </code>{" "}
+                (or{" "}
                 <code className="rounded bg-amber-100/80 px-1 py-0.5">
                   /api/diagnostics/deployment-readiness
-                </code>{" "}
-                on your domain to confirm{" "}
+                </code>
+                ) on your domain to confirm{" "}
                 <code className="rounded bg-amber-100/80 px-1 py-0.5">OPENAI_API_KEY</code> and
                 Resend env vars are set on the host, then check logs for{" "}
                 <code className="rounded bg-amber-100/80 px-1 py-0.5">[post-payment-analysis]</code>.
