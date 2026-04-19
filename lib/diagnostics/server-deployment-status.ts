@@ -1,4 +1,8 @@
-import { isResumeAnalysisLlmConfigured } from "@/lib/analysis/openai-client";
+import {
+  getActiveResumeAnalysisProvider,
+  getResumeAnalysisProviderPreference,
+  isResumeAnalysisLlmConfigured,
+} from "@/lib/analysis/openai-client";
 import {
   getAdminNotificationEmails,
   isResendConfigured,
@@ -16,6 +20,17 @@ export function getServerDeploymentStatusPayload(): Record<string, unknown> {
 
   const groqKey = Boolean(process.env.GROQ_API_KEY?.trim());
   const openaiKey = Boolean(process.env.OPENAI_API_KEY?.trim());
+  const pref = getResumeAnalysisProviderPreference();
+  const active = getActiveResumeAnalysisProvider();
+
+  let resumeAnalysisProviderNote: string | undefined;
+  if (pref === "groq" && !groqKey) {
+    resumeAnalysisProviderNote =
+      "RESUME_ANALYSIS_PROVIDER=groq but GROQ_API_KEY is missing — add the key and restart.";
+  } else if (active === "openai" && openaiKey && !groqKey) {
+    resumeAnalysisProviderNote =
+      "Using OpenAI because GROQ_API_KEY is not set in this server process. To use Groq: add GROQ_API_KEY (exact name) in hosting env, save, restart. If both keys exist, Groq is used unless RESUME_ANALYSIS_PROVIDER=openai.";
+  }
 
   return {
     supabaseConfigured: supabaseOk,
@@ -24,8 +39,11 @@ export function getServerDeploymentStatusPayload(): Record<string, unknown> {
     resumeAnalysisLlmConfigured: isResumeAnalysisLlmConfigured(),
     groqApiKeyPresent: groqKey,
     openaiApiKeyPresent: openaiKey,
-    /** Prefer Groq when GROQ_API_KEY is set. */
-    resumeAnalysisProvider: groqKey ? "groq" : openaiKey ? "openai" : "none",
+    /** Env preference: auto (default) | groq | openai. */
+    resumeAnalysisProviderPreference: pref,
+    /** Actual backend in use (matches `getOpenAIClient()`). */
+    resumeAnalysisProvider: active,
+    resumeAnalysisProviderNote,
     /** @deprecated Use resumeAnalysisLlmConfigured */
     openaiConfigured: isResumeAnalysisLlmConfigured(),
     resendConfigured: isResendConfigured(),
@@ -36,7 +54,7 @@ export function getServerDeploymentStatusPayload(): Record<string, unknown> {
       emailsAfterAnalysis: supabaseOk && isResendConfigured(),
     },
     hint:
-      "After payment, the server runs LLM analysis (Groq if GROQ_API_KEY is set, else OpenAI), uploads a PDF to Supabase, then emails the user. " +
+      "After payment, the server runs LLM analysis (`resumeAnalysisProvider`: groq when GROQ_API_KEY is set and not forced to OpenAI). " +
       "If `resumeAnalysisLlmConfigured` is false, set GROQ_API_KEY or OPENAI_API_KEY on the host and redeploy. " +
       "If `resendConfigured` is false, set RESEND_API_KEY and RESEND_FROM_EMAIL. " +
       "Admin alerts need RESUME_ANALYZER_ADMIN_EMAILS as well.",

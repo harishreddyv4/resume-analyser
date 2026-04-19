@@ -22,9 +22,47 @@ export function isOpenAIConfigured(): boolean {
   return isResumeAnalysisLlmConfigured();
 }
 
-/** True when Groq should be used for resume analysis (GROQ_API_KEY set). */
+/**
+ * Optional: `groq` | `openai` | `auto` (default).
+ * - `openai` — use OpenAI even if `GROQ_API_KEY` is set (both keys in env).
+ * - `groq` or `auto` — use Groq when `GROQ_API_KEY` is set, otherwise OpenAI.
+ */
+export function getResumeAnalysisProviderPreference(): "groq" | "openai" | "auto" {
+  const raw = process.env.RESUME_ANALYSIS_PROVIDER?.trim().toLowerCase();
+  if (raw === "openai" || raw === "groq" || raw === "auto") {
+    return raw;
+  }
+  return "auto";
+}
+
+/** True when Groq should be used for resume analysis. */
 export function isGroqAnalysisEnabled(): boolean {
-  return Boolean(process.env.GROQ_API_KEY?.trim());
+  const pref = getResumeAnalysisProviderPreference();
+  if (pref === "openai") {
+    return false;
+  }
+  const hasGroq = Boolean(process.env.GROQ_API_KEY?.trim());
+  if (pref === "groq") {
+    return hasGroq;
+  }
+  return hasGroq;
+}
+
+/**
+ * Which backend the running process uses for resume analysis (matches runtime).
+ */
+export function getActiveResumeAnalysisProvider(): "groq" | "openai" | "none" {
+  const pref = getResumeAnalysisProviderPreference();
+  if (pref === "groq" && !process.env.GROQ_API_KEY?.trim()) {
+    return "none";
+  }
+  if (isGroqAnalysisEnabled()) {
+    return "groq";
+  }
+  if (process.env.OPENAI_API_KEY?.trim()) {
+    return "openai";
+  }
+  return "none";
 }
 
 function requireGroqKey(): string {
@@ -57,6 +95,12 @@ export function getResumeAnalysisModel(): string {
  */
 export function getOpenAIClient(): OpenAI {
   if (!cachedClient) {
+    const pref = getResumeAnalysisProviderPreference();
+    if (pref === "groq" && !process.env.GROQ_API_KEY?.trim()) {
+      throw new Error(
+        "RESUME_ANALYSIS_PROVIDER=groq but GROQ_API_KEY is not set on the server.",
+      );
+    }
     if (isGroqAnalysisEnabled()) {
       cachedClient = new OpenAI({
         apiKey: requireGroqKey(),

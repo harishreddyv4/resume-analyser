@@ -14,10 +14,12 @@ export {
 } from "./schema";
 export {
   GROQ_DEFAULT_ANALYSIS_MODEL,
+  getActiveResumeAnalysisProvider,
   getOpenAIClient,
   getResumeAnalysisModel,
-  isOpenAIConfigured,
+  getResumeAnalysisProviderPreference,
   isGroqAnalysisEnabled,
+  isOpenAIConfigured,
   isResumeAnalysisLlmConfigured,
 } from "./openai-client";
 export {
