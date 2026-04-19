@@ -52,10 +52,16 @@ export async function sendAdminPaidSubmissionEmail(
   args: SendAdminPaidSubmissionEmailArgs,
 ): Promise<void> {
   if (!isResendConfigured()) {
+    console.warn(
+      "[email] Admin notification skipped: set RESEND_API_KEY and RESEND_FROM_EMAIL on the server.",
+    );
     return;
   }
   const adminEmails = getAdminNotificationEmails();
   if (adminEmails.length === 0) {
+    console.warn(
+      "[email] Admin notification skipped: RESUME_ANALYZER_ADMIN_EMAILS is empty.",
+    );
     return;
   }
 
@@ -80,6 +86,9 @@ export async function sendUserAnalysisCompleteEmail(
   args: SendUserAnalysisCompleteEmailArgs,
 ): Promise<void> {
   if (!isResendConfigured()) {
+    console.warn(
+      "[email] User report email skipped: set RESEND_API_KEY and RESEND_FROM_EMAIL on the server.",
+    );
     return;
   }
   const toEmail = args.toEmail.trim();

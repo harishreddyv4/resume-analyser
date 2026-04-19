@@ -17,4 +17,7 @@ export {
   getOpenAIClient,
   isOpenAIConfigured,
 } from "./openai-client";
-export { runPostPaymentAnalysis } from "./post-payment/run-post-payment-analysis";
+export {
+  runPostPaymentAnalysis,
+  type PostPaymentAnalysisResult,
+} from "./post-payment/run-post-payment-analysis";

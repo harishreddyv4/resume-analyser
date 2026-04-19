@@ -18,7 +18,14 @@ export async function runPostPaymentAnalysisSafely(
   submissionId: string,
 ): Promise<void> {
   try {
-    await runPostPaymentAnalysis(submissionId);
+    const result = await runPostPaymentAnalysis(submissionId);
+    if (!result.ok) {
+      console.error(`[razorpay/confirm] post-payment analysis finished with error`, {
+        submissionId,
+        stage: result.stage,
+        error: result.error,
+      });
+    }
   } catch (err) {
     logPostPaymentActionError("post-payment analysis", submissionId, err);
   }

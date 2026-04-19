@@ -89,6 +89,29 @@ export async function markSubmissionAnalysisFailedPostPayment(
 }
 
 /**
+ * If a paid submission is stuck in `processing` (e.g. server crashed mid-run),
+ * reset to `queued` so `claimSubmissionForPostPaymentAnalysis` can run again.
+ */
+export async function requeuePaidSubmissionIfStuckProcessing(
+  submissionId: string,
+): Promise<boolean> {
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("submissions")
+    .update({ analysis_status: ANALYSIS_STATUS.QUEUED })
+    .eq("id", submissionId)
+    .eq("payment_status", PAYMENT_STATUS.PAID)
+    .eq("analysis_status", ANALYSIS_STATUS.PROCESSING)
+    .select("id")
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+  return Boolean(data);
+}
+
+/**
  * Persists extracted text without changing `analysis_status` (used after payment).
  */
 export async function updateSubmissionResumeExtractedTextOnly(

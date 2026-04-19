@@ -18,6 +18,10 @@ const ANALYSIS_RETRY_ATTEMPTS = 3;
 const PDF_RETRY_ATTEMPTS = 3;
 const EMAIL_RETRY_ATTEMPTS = 3;
 
+export type PostPaymentAnalysisResult =
+  | { ok: true; alreadyComplete?: boolean }
+  | { ok: false; error: string; stage?: string };
+
 function logPostPaymentAnalysis(
   level: "info" | "warn" | "error",
   message: string,
@@ -42,24 +46,29 @@ function logPostPaymentAnalysis(
  */
 export async function runPostPaymentAnalysis(
   submissionId: string,
-): Promise<void> {
+): Promise<PostPaymentAnalysisResult> {
   const claim = await claimSubmissionForPostPaymentAnalysis(submissionId);
 
   if (claim.status === "skipped_complete") {
     logPostPaymentAnalysis("info", "skip_already_complete", { submissionId });
-    return;
+    return { ok: true, alreadyComplete: true };
   }
   if (claim.status === "skipped_processing") {
     logPostPaymentAnalysis("info", "skip_processing_or_race", { submissionId });
-    return;
+    return {
+      ok: false,
+      stage: "claim",
+      error:
+        "Analysis is already running (status processing). Wait a minute or use admin retry if it is stuck.",
+    };
   }
   if (claim.status === "not_found") {
     logPostPaymentAnalysis("error", "submission_not_found", { submissionId });
-    return;
+    return { ok: false, stage: "claim", error: "Submission not found." };
   }
   if (claim.status === "not_paid") {
     logPostPaymentAnalysis("error", "submission_not_paid", { submissionId });
-    return;
+    return { ok: false, stage: "claim", error: "Submission is not paid." };
   }
 
   const row = claim.row;
@@ -70,29 +79,43 @@ export async function runPostPaymentAnalysis(
       try {
         resumeText = (await extractResumeText(row.resume_file_url)).trim();
       } catch (err) {
+        const detail = err instanceof Error ? err.message : String(err);
         logPostPaymentAnalysis("error", "resume_extraction_failed", {
           submissionId,
-          detail: err instanceof Error ? err.message : String(err),
+          detail,
         });
         await markSubmissionAnalysisFailedPostPayment(submissionId);
-        return;
+        return {
+          ok: false,
+          stage: "resume_extraction",
+          error: `Could not read resume file: ${detail}`,
+        };
       }
       if (!resumeText) {
         logPostPaymentAnalysis("error", "resume_text_empty_after_extraction", {
           submissionId,
         });
         await markSubmissionAnalysisFailedPostPayment(submissionId);
-        return;
+        return {
+          ok: false,
+          stage: "resume_extraction",
+          error: "Resume text was empty after parsing the file.",
+        };
       }
       try {
         await updateSubmissionResumeExtractedTextOnly(submissionId, resumeText);
       } catch (err) {
+        const detail = err instanceof Error ? err.message : String(err);
         logPostPaymentAnalysis("error", "persist_extracted_text_failed", {
           submissionId,
-          detail: err instanceof Error ? err.message : String(err),
+          detail,
         });
         await markSubmissionAnalysisFailedPostPayment(submissionId);
-        return;
+        return {
+          ok: false,
+          stage: "persist_text",
+          error: detail,
+        };
       }
     }
 
@@ -102,7 +125,11 @@ export async function runPostPaymentAnalysis(
         selectedPlan: row.selected_plan,
       });
       await markSubmissionAnalysisFailedPostPayment(submissionId);
-      return;
+      return {
+        ok: false,
+        stage: "plan",
+        error: `Invalid plan on submission: ${row.selected_plan}`,
+      };
     }
     const planId = row.selected_plan;
 
@@ -189,11 +216,13 @@ export async function runPostPaymentAnalysis(
       overallResumeScore: report.overallResumeScore,
       atsReadinessScore: report.atsReadinessScore,
     });
+    return { ok: true };
   } catch (err) {
+    const detail = err instanceof Error ? err.message : String(err);
     logPostPaymentAnalysis("error", "analysis_pipeline_failed", {
       submissionId,
       nextStatus: ANALYSIS_STATUS.FAILED,
-      detail: err instanceof Error ? err.message : String(err),
+      detail,
     });
     try {
       await markSubmissionAnalysisFailedPostPayment(submissionId);
@@ -203,5 +232,10 @@ export async function runPostPaymentAnalysis(
         detail: markErr instanceof Error ? markErr.message : String(markErr),
       });
     }
+    return {
+      ok: false,
+      stage: "pipeline",
+      error: detail,
+    };
   }
 }

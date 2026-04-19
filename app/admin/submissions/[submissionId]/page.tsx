@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import { Container } from "@/components/layout/Container";
 import { ButtonLink } from "@/components/ui/Button";
+import { AdminRetryAnalysisButton } from "@/components/admin/AdminRetryAnalysisButton";
 import { AdminUnauthorized } from "@/components/admin/AdminUnauthorized";
 import { isAdminAuthorized } from "@/lib/admin/auth-placeholder";
 import { fetchAdminSubmissionDetail } from "@/lib/admin/submissions-dashboard";
@@ -128,13 +129,26 @@ export default async function AdminSubmissionDetailPage({
             ) : null}
           </dl>
 
-          {submission.analysis_status === "failed" && submission.payment_status === "paid" ? (
-            <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950">
-              Analysis failed after payment. Check the server log for{" "}
-              <code className="rounded bg-amber-100/80 px-1 py-0.5">[post-payment-analysis]</code> on
-              the host, and verify OpenAI keys, Supabase storage, and PDF generation. The resume file
-              link above can be retested manually.
-            </p>
+          {submission.payment_status === "paid" &&
+          submission.analysis_status !== "complete" ? (
+            <>
+              <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950">
+                After payment, the server runs analysis (OpenAI), saves the report and PDF to
+                Supabase, then emails the user. If analysis is not{" "}
+                <code className="rounded bg-amber-100/80 px-1 py-0.5">complete</code>, open{" "}
+                <code className="rounded bg-amber-100/80 px-1 py-0.5">
+                  /api/diagnostics/deployment-readiness
+                </code>{" "}
+                on your domain to confirm{" "}
+                <code className="rounded bg-amber-100/80 px-1 py-0.5">OPENAI_API_KEY</code> and
+                Resend env vars are set on the host, then check logs for{" "}
+                <code className="rounded bg-amber-100/80 px-1 py-0.5">[post-payment-analysis]</code>.
+              </p>
+              <AdminRetryAnalysisButton
+                submissionId={submission.id}
+                adminKey={adminKeyParam}
+              />
+            </>
           ) : null}
 
           <div className="mt-6 space-y-3 border-t border-zinc-100 pt-6 text-sm">
