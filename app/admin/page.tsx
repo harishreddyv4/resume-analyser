@@ -76,7 +76,14 @@ export default async function AdminPage({
           Submissions
         </h1>
 
-        <form className="mt-6 grid gap-3 rounded-xl border border-zinc-200 bg-white p-4 sm:grid-cols-4">
+        <form
+          method="get"
+          action="/admin"
+          className="mt-6 grid gap-3 rounded-xl border border-zinc-200 bg-white p-4 sm:grid-cols-4"
+        >
+          {adminKeyParam ? (
+            <input type="hidden" name="adminKey" value={adminKeyParam} />
+          ) : null}
           <div>
             <label className="mb-1 block text-xs font-medium text-zinc-600">
               Payment
