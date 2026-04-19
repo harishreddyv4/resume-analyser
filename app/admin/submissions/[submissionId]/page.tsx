@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import { Container } from "@/components/layout/Container";
 import { ButtonLink } from "@/components/ui/Button";
+import { AdminResendReportEmailButton } from "@/components/admin/AdminResendReportEmailButton";
 import { AdminRetryAnalysisButton } from "@/components/admin/AdminRetryAnalysisButton";
 import { AdminUnauthorized } from "@/components/admin/AdminUnauthorized";
 import { isAdminAuthorized } from "@/lib/admin/auth-placeholder";
@@ -205,6 +206,13 @@ export default async function AdminSubmissionDetailPage({
                 Open report
               </Link>
             </p>
+            {report ? (
+              <AdminResendReportEmailButton
+                submissionId={submission.id}
+                defaultEmail={submission.email}
+                adminKey={adminKeyParam}
+              />
+            ) : null}
           </div>
         </div>
       </Container>
