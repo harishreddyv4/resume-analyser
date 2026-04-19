@@ -2,7 +2,8 @@ import type { PlanId } from "@/lib/plan-ids";
 import {
   getOpenAIClient,
   getResumeAnalysisModel,
-  isOpenAIConfigured,
+  isGroqAnalysisEnabled,
+  isResumeAnalysisLlmConfigured,
 } from "./openai-client";
 import {
   createResumeAnalysisUserPrompt,
@@ -36,7 +37,7 @@ function parseModelJson(content: string): unknown {
   try {
     return JSON.parse(content);
   } catch {
-    throw new Error("OpenAI returned non-JSON output.");
+    throw new Error("Model returned non-JSON output.");
   }
 }
 
@@ -44,10 +45,10 @@ function extractAssistantJsonText(
   message: { content?: unknown; refusal?: unknown } | undefined,
 ): string {
   if (!message) {
-    throw new Error("OpenAI returned no assistant message.");
+    throw new Error("Model returned no assistant message.");
   }
   if (typeof message.refusal === "string" && message.refusal.trim()) {
-    throw new Error(`OpenAI refused analysis: ${message.refusal}`);
+    throw new Error(`Model refused analysis: ${message.refusal}`);
   }
 
   if (typeof message.content === "string") {
@@ -75,14 +76,16 @@ function extractAssistantJsonText(
     }
   }
 
-  throw new Error("OpenAI returned an empty response.");
+  throw new Error("Model returned an empty response.");
 }
 
 export async function analyzeResumeWithOpenAI(
   input: AnalyzeResumeInput,
 ): Promise<ResumeAnalysisResponse> {
-  if (!isOpenAIConfigured()) {
-    throw new Error("OpenAI is not configured. Set OPENAI_API_KEY.");
+  if (!isResumeAnalysisLlmConfigured()) {
+    throw new Error(
+      "Resume analysis LLM is not configured. Set GROQ_API_KEY (Groq) or OPENAI_API_KEY (OpenAI) on the server.",
+    );
   }
 
   const resumeText = trimForModel(input.resumeText, MAX_RESUME_TEXT_CHARS);
@@ -95,6 +98,11 @@ export async function analyzeResumeWithOpenAI(
     : undefined;
   const shouldRunJobMatch = input.planId === "job-match" && Boolean(jobDescription);
 
+  const jsonSchemaStrict =
+    isGroqAnalysisEnabled() && process.env.GROQ_JSON_SCHEMA_STRICT === "false"
+      ? false
+      : true;
+
   try {
     const completion = await getOpenAIClient().chat.completions.create({
       model: getResumeAnalysisModel(),
@@ -103,7 +111,7 @@ export async function analyzeResumeWithOpenAI(
         type: "json_schema",
         json_schema: {
           name: "resume_analysis_report",
-          strict: true,
+          strict: jsonSchemaStrict,
           schema: resumeAnalysisJsonSchema,
         },
       },
@@ -142,7 +150,8 @@ export async function analyzeResumeWithOpenAI(
 
     return parsed;
   } catch (err) {
-    console.error("[resume-analysis] OpenAI analysis failed", {
+    console.error("[resume-analysis] LLM analysis failed", {
+      provider: isGroqAnalysisEnabled() ? "groq" : "openai",
       model: getResumeAnalysisModel(),
       planId: input.planId,
       hasJobDescription: Boolean(jobDescription),

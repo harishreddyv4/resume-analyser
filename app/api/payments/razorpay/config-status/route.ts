@@ -21,7 +21,7 @@ export async function GET() {
     keyIdPresent,
     keySecretPresent,
     hint: razorpayOk
-      ? "Keys are visible to the server process. After payment, OPENAI_API_KEY runs analysis; RESEND_* sends email."
+      ? "Keys are visible to the server process. After payment, GROQ_API_KEY or OPENAI_API_KEY runs analysis; RESEND_* sends email."
       : "Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in your hosting panel (exact names), save, then restart/redeploy the Node app. Variables in .env on your laptop do not apply to production.",
   });
 }

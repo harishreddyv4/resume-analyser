@@ -13,9 +13,12 @@ export {
   type ResumeAnalysisResponse,
 } from "./schema";
 export {
-  getResumeAnalysisModel,
+  GROQ_DEFAULT_ANALYSIS_MODEL,
   getOpenAIClient,
+  getResumeAnalysisModel,
   isOpenAIConfigured,
+  isGroqAnalysisEnabled,
+  isResumeAnalysisLlmConfigured,
 } from "./openai-client";
 export {
   runPostPaymentAnalysis,

@@ -59,7 +59,8 @@ export function SubmissionReportView({ data }: { data: SubmissionReportPageData 
                   <span className="font-mono text-xs">{data.submissionId}</span> is marked{" "}
                   <span className="font-medium text-zinc-900">failed</span> in the database.
                   This usually means resume text could not be read, OpenAI returned an error
-                  (check <span className="font-mono text-xs">OPENAI_API_KEY</span> and model
+                  (check <span className="font-mono text-xs">GROQ_API_KEY</span> or{" "}
+                  <span className="font-mono text-xs">OPENAI_API_KEY</span> and model
                   limits), or PDF/report persistence failed. See the terminal where{" "}
                   <span className="font-mono text-xs">npm run dev</span> is running for{" "}
                   <span className="font-mono text-xs">[post-payment-analysis]</span> or{" "}

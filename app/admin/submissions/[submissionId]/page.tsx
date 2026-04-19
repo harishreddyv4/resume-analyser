@@ -143,9 +143,15 @@ export default async function AdminSubmissionDetailPage({
                 <code className="rounded bg-amber-100/80 px-1 py-0.5">
                   /api/diagnostics/deployment-readiness
                 </code>
-                ) on your domain to confirm{" "}
-                <code className="rounded bg-amber-100/80 px-1 py-0.5">OPENAI_API_KEY</code> and
-                Resend env vars are set on the host, then check logs for{" "}
+                )                 on your domain to confirm{" "}
+                <code className="rounded bg-amber-100/80 px-1 py-0.5">
+                  GROQ_API_KEY
+                </code>{" "}
+                or{" "}
+                <code className="rounded bg-amber-100/80 px-1 py-0.5">
+                  OPENAI_API_KEY
+                </code>{" "}
+                and Resend env vars are set on the host, then check logs for{" "}
                 <code className="rounded bg-amber-100/80 px-1 py-0.5">[post-payment-analysis]</code>.
               </p>
               <AdminRetryAnalysisButton
