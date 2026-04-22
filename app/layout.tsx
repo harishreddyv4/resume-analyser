@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import Script from "next/script";
 import "./globals.css";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
@@ -71,6 +72,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-dvh font-sans text-slate-900 antialiased`}
       >
+        <Script
+          id="google-adsense"
+          strategy="afterInteractive"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4331866063114222"
+          crossOrigin="anonymous"
+        />
         <div className="flex min-h-dvh flex-col">
           <Header />
           <div className="flex-1">{children}</div>
