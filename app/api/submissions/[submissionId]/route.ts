@@ -7,14 +7,14 @@ import type { UserSubmission } from "@/types/submission";
 
 export const runtime = "nodejs";
 
-type RouteContext = { params: { submissionId: string } };
+type RouteContext = { params: Promise<{ submissionId: string }> };
 
 export async function GET(_request: Request, context: RouteContext) {
   if (!isSupabaseConfigured()) {
     return jsonApiError(SUPABASE_SETUP_REQUIRED_MESSAGE, 503);
   }
 
-  const id = context.params.submissionId;
+  const { submissionId: id } = await context.params;
   try {
     const submission = await getSubmission(id);
     if (!submission) {

@@ -26,17 +26,19 @@ export default async function AdminSubmissionDetailPage({
   params,
   searchParams,
 }: {
-  params: { submissionId: string };
-  searchParams: { adminKey?: string };
+  params: Promise<{ submissionId: string }>;
+  searchParams: Promise<{ adminKey?: string }>;
 }) {
+  const { submissionId } = await params;
+  const query = await searchParams;
   const adminKeyParam =
-    typeof searchParams.adminKey === "string" ? searchParams.adminKey : undefined;
-  if (!isAdminAuthorized(headers(), adminKeyParam)) {
+    typeof query.adminKey === "string" ? query.adminKey : undefined;
+  if (!isAdminAuthorized(await headers(), adminKeyParam)) {
     return <AdminUnauthorized />;
   }
 
   const { submission, report } = await fetchAdminSubmissionDetail(
-    params.submissionId,
+    submissionId,
   );
   if (!submission) {
     notFound();

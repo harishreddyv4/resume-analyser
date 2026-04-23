@@ -13,9 +13,10 @@ type RouteParams = { submissionId: string };
 export default async function SubmissionReportPage({
   params,
 }: {
-  params: RouteParams;
+  params: Promise<RouteParams>;
 }) {
-  const data = await fetchSubmissionReportPageData(params.submissionId);
+  const { submissionId } = await params;
+  const data = await fetchSubmissionReportPageData(submissionId);
   if (!data) {
     notFound();
   }

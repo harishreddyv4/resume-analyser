@@ -36,11 +36,12 @@ function firstNameFromFull(fullName: string): string {
 export default async function CheckoutSuccessPage({
   searchParams,
 }: {
-  searchParams: PageSearchParams;
+  searchParams: Promise<PageSearchParams>;
 }) {
-  const submissionId = firstSearchParam(searchParams.submissionId);
-  const planParam = firstSearchParam(searchParams.plan);
-  const roleFromUrl = parseRoleSummaryParam(searchParams.role);
+  const sp = await searchParams;
+  const submissionId = firstSearchParam(sp.submissionId);
+  const planParam = firstSearchParam(sp.plan);
+  const roleFromUrl = parseRoleSummaryParam(sp.role);
   const plan = resolvePlan(planParam);
 
   let fullName = "—";

@@ -42,22 +42,23 @@ function formatDate(iso: string): string {
 export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: Record<string, string | string[] | undefined>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const sp = await searchParams;
   const adminKeyParam =
-    typeof searchParams.adminKey === "string" ? searchParams.adminKey : undefined;
-  if (!isAdminAuthorized(headers(), adminKeyParam)) {
+    typeof sp.adminKey === "string" ? sp.adminKey : undefined;
+  if (!isAdminAuthorized(await headers(), adminKeyParam)) {
     return <AdminUnauthorized />;
   }
 
   const billing = readBillingFilter(
-    typeof searchParams.billing === "string" ? searchParams.billing : undefined,
+    typeof sp.billing === "string" ? sp.billing : undefined,
   );
   const analysis = readAnalysisFilter(
-    typeof searchParams.analysis === "string" ? searchParams.analysis : undefined,
+    typeof sp.analysis === "string" ? sp.analysis : undefined,
   );
   const plan = readPlanFilter(
-    typeof searchParams.plan === "string" ? searchParams.plan : undefined,
+    typeof sp.plan === "string" ? sp.plan : undefined,
   );
 
   const submissions = await fetchAdminSubmissions({
